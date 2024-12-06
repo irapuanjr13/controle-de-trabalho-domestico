@@ -104,12 +104,7 @@ def agendar_envio():
     # Email e mensagem
     destinatario = "ellen.asduarte@yahoo.com.br"
     assunto = f"Recibo de Vale-Transporte - Vigência {calendar.month_name[mes_vigencia]} {ano_vigencia}"
-    mensagem = f"Segue em anexo o recibo de vale-transporte com vigência {calendar.month_name[mes_vigencia]} de {ano_vigencia}, valor da remuneração liquida mensal de R$ 1.841,18.
-     Valor do 13º salario de é 2.333,32 (para 2025) em 2024 de 1.166,66. 
-     O 13º salário é concedido anualmente, em duas parcelas, a primeira parcela (adiantamento do 13º salário) deve ser paga ao trabalhador entre os meses de fevereiro e novembro
-     (até o dia 30/11).
-     A segunda parcela deve ser paga até o dia 20 de dezembro, no valor da remuneração de dezembro, descontado o adiantamento feito."
-    
+    mensagem = f"Segue em anexo o recibo de vale-transporte com vigência {calendar.month_name[mes_vigencia]} de {ano_vigencia}, valor da remuneração liquida mensal de R$ 1.841,18, Valor do 13º salario em 2025 de 2.333,32." 
     enviar_email(destinatario, assunto, mensagem, anexo)
 
 # Agendamento para rodar no dia 27 de cada mês
@@ -138,6 +133,7 @@ def enviar_teste_imediato():
     enviar_email(destinatario, assunto, mensagem, anexo)
     print("Email de teste enviado com sucesso!")
 
+if __name__ == "__main__":
     # Envio de email imediato para teste
     enviar_teste_imediato()
     
@@ -151,4 +147,4 @@ def enviar_teste_imediato():
         schedule.run_pending()
         time.sleep(1)
 
-if __name__ == "__main__":
+    
