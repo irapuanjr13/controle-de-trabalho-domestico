@@ -17,7 +17,6 @@ CUSTO_DIARIO_TRANSPORTE = 21.0
 
 # Função para calcular a vigência e gerar o recibo
 def gerar_pdf_domestica(dias_trabalhados, folgas, custo_transporte, fechamento_data):
-    # Calcula o mês seguinte ao fechamento
     vigencia_inicio = fechamento_data + timedelta(days=5)
     ano_vigencia = vigencia_inicio.year
     mes_vigencia = vigencia_inicio.month
@@ -38,15 +37,15 @@ def gerar_pdf_domestica(dias_trabalhados, folgas, custo_transporte, fechamento_d
     a quantia de R$ {custo_transporte:.2f} (valor por extenso: __________________________),
     referente ao benefício do Vale-Transporte com vigência de {vigencia_inicio.strftime('%d/%m/%Y')}
     a {datetime(ano_vigencia, mes_vigencia, dias_mes).strftime('%d/%m/%Y')}.
-    
+
     Dados do Benefício:
     - Dias trabalhados: {dias_trabalhados}
     - Dias de folga: {', '.join(map(str, folgas))}
     - Valor diário do transporte: R$ {CUSTO_DIARIO_TRANSPORTE:.2f}
-    
+
     Comprometo-me a utilizar o valor recebido exclusivamente para deslocamento entre minha residência
     e o local de trabalho, conforme as normas acordadas.
-    
+
     Assinatura do Recebedor: _________________________________________________
     Data: ____/____/____
     """
@@ -64,16 +63,16 @@ def gerar_pdf_domestica(dias_trabalhados, folgas, custo_transporte, fechamento_d
 def enviar_email(destinatario, assunto, mensagem, anexo):
     remetente = "irapuanjunior13@gmail.com"
     senha = "232684Ir@"
-    
+
     # Configuração do email
     msg = MIMEMultipart()
     msg['From'] = remetente
     msg['To'] = destinatario
     msg['Subject'] = assunto
-    
+
     # Mensagem do email
     msg.attach(MIMEText(mensagem, 'plain'))
-    
+
     # Anexo
     with open(anexo, "rb") as f:
         part = MIMEBase('application', 'octet-stream')
@@ -81,38 +80,12 @@ def enviar_email(destinatario, assunto, mensagem, anexo):
         encoders.encode_base64(part)
         part.add_header('Content-Disposition', f"attachment; filename={anexo}")
         msg.attach(part)
-    
+
     # Enviar email
     with smtplib.SMTP('smtp.gmail.com', 587) as server:
         server.starttls()
         server.login(remetente, senha)
         server.send_message(msg)
-
-# Agendamento para dia 27 do mês anterior
-def agendar_envio():
-    hoje = datetime.now()
-    fechamento_data = datetime(hoje.year, hoje.month, 26)
-    
-    # Gera recibo com base no fechamento do mês
-    anexo, ano_vigencia, mes_vigencia = gerar_pdf_domestica(
-        dias_trabalhados=20,
-        folgas=[12, 27],
-        custo_transporte=20 * CUSTO_DIARIO_TRANSPORTE,
-        fechamento_data=fechamento_data
-    )
-    
-    # Email e mensagem
-    destinatario = "ellen.asduarte@yahoo.com.br"
-    assunto = f"Recibo de Vale-Transporte - Vigência {calendar.month_name[mes_vigencia]} {ano_vigencia}"
-    mensagem = f"Segue em anexo o recibo de vale-transporte com vigência {calendar.month_name[mes_vigencia]} de {ano_vigencia}, valor da remuneração liquida mensal de R$ 1.841,18, Valor do 13º salario em 2025 de 2.333,32." 
-    enviar_email(destinatario, assunto, mensagem, anexo)
-
-# Agendamento para rodar no dia 27 de cada mês
-schedule.every().month.at("08:00").do(agendar_envio)
-
-while True:
-    schedule.run_pending()
-    time.sleep(1)
 
 # Função de envio imediato para teste
 def enviar_teste_imediato():
@@ -123,28 +96,41 @@ def enviar_teste_imediato():
         custo_transporte=20 * CUSTO_DIARIO_TRANSPORTE,
         fechamento_data=fechamento_data
     )
-    
-    # Email e mensagem
+
     destinatario = "ellen.asduarte@yahoo.com.br"
     assunto = f"Recibo de Vale-Transporte - Vigência {calendar.month_name[mes_vigencia]} {ano_vigencia} (Teste Imediato)"
     mensagem = f"Segue em anexo o recibo de vale-transporte para teste imediato com vigência {calendar.month_name[mes_vigencia]} de {ano_vigencia}."
-    
+
     print("Enviando email de teste imediato referente a dezembro de 2024...")
     enviar_email(destinatario, assunto, mensagem, anexo)
     print("Email de teste enviado com sucesso!")
 
+# Função para o envio regular
+def agendar_envio():
+    hoje = datetime.now()
+    fechamento_data = datetime(hoje.year, hoje.month, 26)
+
+    anexo, ano_vigencia, mes_vigencia = gerar_pdf_domestica(
+        dias_trabalhados=20,
+        folgas=[12, 27],
+        custo_transporte=20 * CUSTO_DIARIO_TRANSPORTE,
+        fechamento_data=fechamento_data
+    )
+
+    destinatario = "ellen.asduarte@yahoo.com.br"
+    assunto = f"Recibo de Vale-Transporte - Vigência {calendar.month_name[mes_vigencia]} {ano_vigencia}"
+    mensagem = f"Segue em anexo o recibo de vale-transporte com vigência {calendar.month_name[mes_vigencia]} de {ano_vigencia}."
+
+    enviar_email(destinatario, assunto, mensagem, anexo)
+
 if __name__ == "__main__":
-    # Envio de email imediato para teste
+    # Envio de teste imediato
     enviar_teste_imediato()
-    
-    # Configuração do agendamento regular
+
+    # Configuração de agendamento regular
     schedule.every().month.at("08:00").do(agendar_envio)
-    
+
     print("Sistema de envio automático iniciado...")
-    
-    # Executa o agendamento
     while True:
         schedule.run_pending()
         time.sleep(1)
-
-    
