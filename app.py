@@ -16,8 +16,8 @@ import logging
 load_dotenv()
 
 # Configurações de email
-EMAIL_REMETENTE = os.getenv("ellenejunior84@gmail.com")
-SENHA_EMAIL = os.getenv("232684Ir@")
+EMAIL_REMETENTE = os.getenv("gestaofuncionario9@gmail.com")
+SENHA_EMAIL = os.getenv("Ellen")
 
 # Configuração de log
 logging.basicConfig(filename='errors.log', level=logging.ERROR)
