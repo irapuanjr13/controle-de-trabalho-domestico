@@ -14,7 +14,7 @@ import logging
 # Carregar variáveis de ambiente
 load_dotenv()
 
-EMAIL=jreletricidade@yahoo.com
+EMAIL="jreletricidade@yahoo.com"
 SENHA="232684Ir@"
 
 # Configurações de e-mail
