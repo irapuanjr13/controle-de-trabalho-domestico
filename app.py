@@ -97,14 +97,19 @@ def enviar_email(destinatario, assunto, mensagem, anexo):
             part.add_header('Content-Disposition', f"attachment; filename={os.path.basename(anexo)}")
             msg.attach(part)
         
-        # Enviar email
-        with smtplib.SMTP('smtp.gmail.com', 587) as server:
-            server.starttls()
-            server.login(EMAIL_REMETENTE, SENHA_EMAIL)
-            server.send_message(msg)
-    except Exception as e:
-        logging.error(f"Erro ao enviar email: {e}")
-        raise
+       # Configurações do servidor SMTP
+        servidor = "smtp.office365.com"
+        porta = 587
+
+        try:
+            with smtplib.SMTP(servidor, porta) as smtp:
+                smtp.starttls()  # Inicializa a conexão segura
+                smtp.login(email, senha)  # Tenta autenticar
+                print("Login bem-sucedido!")
+        except smtplib.SMTPAuthenticationError as e:
+            print(f"Erro de autenticação: {e}")
+        except smtplib.SMTPException as e:
+            print(f"Erro de SMTP: {e}")
 
 # Agendamento para rodar mensalmente
 def agendar_envio():
