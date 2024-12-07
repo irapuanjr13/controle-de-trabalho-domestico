@@ -111,7 +111,7 @@ def agendar_envio():
             fechamento_data=fechamento_data
         )
 
-        destinatario = ["ellen.asduarte@yahoo.com.br", "irapuanjunior13@gmail.com"]
+        destinatarios = ["ellen.asduarte@yahoo.com.br", "irapuanjunior13@gmail.com"]
         assunto = f"Recibo de Vale-Transporte - Vigência {calendar.month_name[mes_vigencia]} {ano_vigencia}"
         mensagem = f"Segue o recibo de vale-transporte com vigência {calendar.month_name[mes_vigencia]} de {ano_vigencia}."
 
