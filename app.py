@@ -115,7 +115,7 @@ def agendar_envio():
         assunto = f"Recibo de Vale-Transporte - Vigência {calendar.month_name[mes_vigencia]} {ano_vigencia}"
         mensagem = f"Segue o recibo de vale-transporte com vigência {calendar.month_name[mes_vigencia]} de {ano_vigencia}."
 
-        nviar_email_com_retentativas(destinatarios, assunto, mensagem, anexo)
+        enviar_email_com_retentativas(destinatarios, assunto, mensagem, anexo)
     except Exception as e:
         logging.error(f"Erro no agendamento: {e}")
         raise
