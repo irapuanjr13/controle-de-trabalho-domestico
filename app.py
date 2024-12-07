@@ -156,8 +156,6 @@ def enviar_teste_imediato():
     except Exception as e:
         logging.error(f"Erro ao enviar teste imediato: {e}")
         raise
-
-if __name__ == "__main__":
     # Envio de email imediato para teste
     enviar_teste_imediato()
     
@@ -170,3 +168,5 @@ if __name__ == "__main__":
     while True:
         schedule.run_pending()
         time.sleep(1)
+        
+if __name__ == "__main__":
