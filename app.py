@@ -98,7 +98,7 @@ def enviar_email_com_retentativas(destinatarios, assunto, mensagem, anexo, max_t
             else:
                 print(f"Todas as {max_tentativas} tentativas falharam.")
                 raise
-
+                
 def agendar_envio():
     hoje = datetime.now()
     fechamento_data = datetime(hoje.year, hoje.month, 26)
