@@ -67,29 +67,37 @@ def gerar_pdf_domestica(dias_trabalhados, folgas, custo_transporte, fechamento_d
         logging.error(f"Erro ao gerar PDF: {e}")
         raise
 
-def enviar_email(destinatario, assunto, mensagem, anexo):
-    try:
-        msg = MIMEMultipart()
-        msg['From'] = EMAIL_REMETENTE
-        msg['To'] = destinatario
-        msg['Subject'] = assunto
-        msg.attach(MIMEText(mensagem, 'plain'))
+def enviar_email_com_retentativas(destinatarios, assunto, mensagem, anexo, max_tentativas=3, intervalo_retentativas=5):
+    for tentativa in range(1, max_tentativas + 1):
+        try:
+            for destinatario in destinatarios:
+                msg = MIMEMultipart()
+                msg['From'] = EMAIL_REMETENTE
+                msg['To'] = destinatario
+                msg['Subject'] = assunto
+                msg.attach(MIMEText(mensagem, 'plain'))
 
-        with open(anexo, "rb") as f:
-            part = MIMEBase('application', 'octet-stream')
-            part.set_payload(f.read())
-            encoders.encode_base64(part)
-            part.add_header('Content-Disposition', f"attachment; filename={os.path.basename(anexo)}")
-            msg.attach(part)
+                with open(anexo, "rb") as f:
+                    part = MIMEBase('application', 'octet-stream')
+                    part.set_payload(f.read())
+                    encoders.encode_base64(part)
+                    part.add_header('Content-Disposition', f"attachment; filename={os.path.basename(anexo)}")
+                    msg.attach(part)
 
-        with smtplib.SMTP("smtp.mail.yahoo.com", 587) as smtp:
-            smtp.starttls()
-            smtp.login(EMAIL_REMETENTE, SENHA_EMAIL)
-            smtp.send_message(msg)
-            print(f"Email enviado para {destinatario} com sucesso!")
-    except Exception as e:
-        logging.error(f"Erro ao enviar email: {e}")
-        raise
+                with smtplib.SMTP("smtp.mail.yahoo.com", 587) as smtp:
+                    smtp.starttls()
+                    smtp.login(EMAIL_REMETENTE, SENHA_EMAIL)
+                    smtp.send_message(msg)
+                    print(f"Email enviado para {destinatario} com sucesso!")
+            return  # Se tudo der certo, sai da função
+        except Exception as e:
+            logging.error(f"Tentativa {tentativa} falhou: {e}")
+            if tentativa < max_tentativas:
+                print(f"Tentativa {tentativa} falhou. Tentando novamente em {intervalo_retentativas} segundos...")
+                time.sleep(intervalo_retentativas)
+            else:
+                print(f"Todas as {max_tentativas} tentativas falharam.")
+                raise
 
 def agendar_envio():
     hoje = datetime.now()
@@ -103,11 +111,11 @@ def agendar_envio():
             fechamento_data=fechamento_data
         )
 
-        destinatario = "ellen.asduarte@yahoo.com.br"
+        destinatario = ["ellen.asduarte@yahoo.com.br", "irapuanjunior13@gmail.com"]
         assunto = f"Recibo de Vale-Transporte - Vigência {calendar.month_name[mes_vigencia]} {ano_vigencia}"
         mensagem = f"Segue o recibo de vale-transporte com vigência {calendar.month_name[mes_vigencia]} de {ano_vigencia}."
 
-        enviar_email(destinatario, assunto, mensagem, anexo)
+        nviar_email_com_retentativas(destinatarios, assunto, mensagem, anexo)
     except Exception as e:
         logging.error(f"Erro no agendamento: {e}")
         raise
