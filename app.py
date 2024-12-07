@@ -121,8 +121,3 @@ def agendar_envio():
         raise
 
 if __name__ == "__main__":
-    try:
-        print("Enviando e-mail de teste...")
-        agendar_envio()
-    except Exception as e:
-        print(f"Erro no envio de e-mail: {e}")
