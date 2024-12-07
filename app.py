@@ -14,9 +14,16 @@ import logging
 # Carregar variáveis de ambiente
 load_dotenv()
 
-# Configurações de email
-EMAIL_REMETENTE = os.getenv(jreletricidade@yahoo.com)
-SENHA_EMAIL = os.getenv(232684Ir@)
+EMAIL=jreletricidade@yahoo.com
+SENHA=232684Ir@
+
+# Configurações de e-mail
+EMAIL_REMETENTE = os.getenv("EMAIL")  # Nome da variável no arquivo .env
+SENHA_EMAIL = os.getenv("SENHA")          # Nome da variável no arquivo .env
+
+# Verificar se as variáveis foram carregadas corretamente
+if not EMAIL_REMETENTE or not SENHA_EMAIL:
+    raise ValueError("As variáveis de ambiente EMAIL_REMETENTE ou SENHA_EMAIL não foram configuradas corretamente.")
 
 # Configuração de log
 logging.basicConfig(filename='errors.log', level=logging.ERROR)
