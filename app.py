@@ -15,7 +15,7 @@ import logging
 load_dotenv()
 
 EMAIL=jreletricidade@yahoo.com
-SENHA=232684Ir@
+SENHA="232684Ir@"
 
 # Configurações de e-mail
 EMAIL_REMETENTE = os.getenv("EMAIL")  # Nome da variável no arquivo .env
