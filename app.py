@@ -16,8 +16,8 @@ import logging
 load_dotenv()
 
 # Configurações de email
-EMAIL_REMETENTE = os.getenv("Irapuan.mousinho@etvo.onmicrosoft.com")
-SENHA_EMAIL = os.getenv("232684Ir@")
+EMAIL_REMETENTE = os.getenv("EMAIL_REMETENTE")
+SENHA_EMAIL = os.getenv("SENHA_EMAIL")
 
 # Configuração de log
 logging.basicConfig(filename='errors.log', level=logging.ERROR)
@@ -52,15 +52,15 @@ def gerar_pdf_domestica(dias_trabalhados, folgas, custo_transporte, fechamento_d
         a quantia de R$ {custo_transporte:.2f} (valor por extenso: __________________________),
         referente ao benefício do Vale-Transporte com vigência de {vigencia_inicio.strftime('%d/%m/%Y')}
         a {datetime(ano_vigencia, mes_vigencia, dias_mes).strftime('%d/%m/%Y')}.
-        
+
         Dados do Benefício:
         - Dias trabalhados: {dias_trabalhados}
         - Dias de folga: {', '.join(map(str, folgas))}
         - Valor diário do transporte: R$ {CUSTO_DIARIO_TRANSPORTE:.2f}
-        
+
         Comprometo-me a utilizar o valor recebido exclusivamente para deslocamento entre minha residência
         e o local de trabalho, conforme as normas acordadas.
-        
+
         Assinatura do Recebedor: _________________________________________________
         Data: ____/____/____
         """
@@ -97,19 +97,18 @@ def enviar_email(destinatario, assunto, mensagem, anexo):
             part.add_header('Content-Disposition', f"attachment; filename={os.path.basename(anexo)}")
             msg.attach(part)
         
-       # Configurações do servidor SMTP
+        # Configurações do servidor SMTP
         servidor = "smtp.office365.com"
         porta = 587
 
-        try:
-            with smtplib.SMTP(servidor, porta) as smtp:
-                smtp.starttls()  # Inicializa a conexão segura
-                smtp.login(email, senha)  # Tenta autenticar
-                print("Login bem-sucedido!")
-        except smtplib.SMTPAuthenticationError as e:
-            print(f"Erro de autenticação: {e}")
-        except smtplib.SMTPException as e:
-            print(f"Erro de SMTP: {e}")
+        with smtplib.SMTP(servidor, porta) as smtp:
+            smtp.starttls()  # Inicializa a conexão segura
+            smtp.login(EMAIL_REMETENTE, SENHA_EMAIL)  # Autentica
+            smtp.send_message(msg)  # Envia o email
+            print(f"Email enviado para {destinatario} com sucesso!")
+    except Exception as e:
+        logging.error(f"Erro ao enviar email: {e}")
+        raise
 
 # Agendamento para rodar mensalmente
 def agendar_envio():
@@ -134,30 +133,9 @@ def agendar_envio():
         logging.error(f"Erro ao agendar envio: {e}")
         raise
 
-# Envio de teste imediato
-def enviar_teste_imediato():
-    try:
-        fechamento_data = datetime(2024, 11, 26)  # Fechamento referente a dezembro de 2024
-        anexo, ano_vigencia, mes_vigencia = gerar_pdf_domestica(
-            dias_trabalhados=20,
-            folgas=[12, 27],
-            custo_transporte=20 * CUSTO_DIARIO_TRANSPORTE,
-            fechamento_data=fechamento_data
-        )
-        
-        # Email e mensagem
-        destinatario = "ellen.asduarte@yahoo.com.br"
-        assunto = f"Recibo de Vale-Transporte - Vigência {calendar.month_name[mes_vigencia]} {ano_vigencia} (Teste Imediato)"
-        mensagem = f"Segue em anexo o recibo de vale-transporte para teste imediato com vigência {calendar.month_name[mes_vigencia]} de {ano_vigencia}."
-        
-        print("Enviando email de teste imediato...")
-        enviar_email(destinatario, assunto, mensagem, anexo)
-        print("Email de teste enviado com sucesso!")
-    except Exception as e:
-        logging.error(f"Erro ao enviar teste imediato: {e}")
-        raise
+if __name__ == "__main__":
     # Envio de email imediato para teste
-    enviar_teste_imediato()
+    agendar_envio()
     
     # Configuração do agendamento regular
     schedule.every().month.at("08:00").do(agendar_envio)
@@ -168,5 +146,3 @@ def enviar_teste_imediato():
     while True:
         schedule.run_pending()
         time.sleep(1)
-        
-if __name__ == "__main__":
