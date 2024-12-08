@@ -140,4 +140,13 @@ def executar_geracao_recibo():
 
 
 if __name__ == "__main__":
-    executar_geracao_recibo()
+    try:
+        print("Enviando e-mail de teste para verificar configurações...")
+        enviar_email_teste()
+        print("E-mail de teste enviado com sucesso!")
+    except Exception as e:
+        print(f"Erro ao enviar e-mail de teste: {e}")
+
+    # Em seguida, inicia o agendamento normal
+    agendar_envio()
+
