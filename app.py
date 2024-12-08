@@ -148,7 +148,7 @@ def executar_geracao_recibo():
 
 def verificar_data():
     """
-    Verifica se é dia 08 e executa a função se for o caso.
+    Verifica se é dia 8 e executa a função se for o caso.
     """
     hoje = datetime.now()
     if hoje.day == 8:  # Verifica se é dia 8
