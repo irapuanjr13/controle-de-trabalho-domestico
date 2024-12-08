@@ -117,14 +117,20 @@ def gerar_recibo(passagens_total, custo_total, mes, ano):
     return nome_pdf
 
 
-def executar_geracao_recibo():
+def verificar_data():
     """
-    Função que será executada no dia 8.
+    Verifica se é dia 8 e executa a função se for o caso.
     """
     hoje = datetime.now()
-    print(f"Executando geração do recibo em {hoje.strftime('%d/%m/%Y')}...")
+    if hoje.day == 8:  # Verifica se é dia 8
+        executar_geracao_recibo()
+    else:
+        print(f"Hoje não é dia 08. Data atual: {hoje.strftime('%d/%m/%Y')}")
+
+
+def executar_geracao_recibo():
     """
-    Calcula as passagens e gera o recibo para o mês posterior ao agendamento.
+   Calcula as passagens e gera o recibo para o mês posterior ao agendamento.
     """
     hoje = datetime.now()
     proximo_mes = (hoje.month % 12) + 1
@@ -145,29 +151,15 @@ def executar_geracao_recibo():
     recibo_pdf = gerar_recibo(passagens_total, custo_total, proximo_mes, ano_proximo_mes)
     print(f"Recibo gerado: {recibo_pdf}")
 
-
-def verificar_data():
-    """
-    Verifica se é dia 8 e executa a função se for o caso.
-    """
-    hoje = datetime.now()
-    if hoje.day == 8:  # Verifica se é dia 8
-        executar_geracao_recibo()
-    else:
-        print(f"Hoje não é dia 08. Data atual: {hoje.strftime('%d/%m/%Y')}")
-
-    # Configura o agendamento para verificar diariamente às 08:00
-    schedule.every().day.at("8:00").do(verificar_data)
-
-    print("Agendamento configurado. O script está em execução...")
-
-
+   
 def agendar_envio():
     """
     Agenda a execução para o dia 8 de cada mês.
     """
-    schedule.every().month.at("8 00:00").do(executar_geracao_recibo)
-    print("Agendamento configurado para todo dia 8.")
+     # Configura o agendamento para verificar diariamente às 08:00
+    schedule.every().day.at("8:00").do(verificar_data)
+
+    print("Agendamento configurado. O script está em execução...")
 
     while True:
         schedule.run_pending()
