@@ -2,11 +2,13 @@ from fpdf import FPDF
 from datetime import datetime, timedelta
 import calendar
 import holidays
+import inflect
 
 # Configurações gerais
 FERIADOS = holidays.Brazil()  # Lista de feriados no Brasil
 VALOR_PASSAGEM = 5.25         # Valor unitário da passagem
 CONDUCOES_POR_DIA = 4         # Número de conduções diárias (ida e volta)
+engine = inflect.engine()     # Motor para conversão de números para palavras (extenso)
 
 
 def calcular_dias_uteis(ano, mes):
@@ -53,6 +55,16 @@ def ajustar_folgas_para_sexta(folgas):
     return folgas_ajustadas
 
 
+def converter_valor_por_extenso(valor):
+    """
+    Converte um valor monetário em reais para extenso.
+    """
+    reais, centavos = divmod(int(valor * 100), 100)
+    reais_extenso = f"{engine.number_to_words(reais, lang='pt_BR').capitalize()} reais"
+    centavos_extenso = f"{engine.number_to_words(centavos, lang='pt_BR')} centavos" if centavos > 0 else ""
+    return f"{reais_extenso} e {centavos_extenso}".strip()
+
+
 def gerar_recibo(passagens_total, custo_total, mes, ano):
     """
     Gera um recibo no formato solicitado.
@@ -73,10 +85,15 @@ def gerar_recibo(passagens_total, custo_total, mes, ano):
     pdf.cell(0, 10, txt="Empregado(a): Amanda Karoline Ramos da Silva", ln=True)
     pdf.ln(10)
 
+    valor_extenso = converter_valor_por_extenso(custo_total)
+
     pdf.multi_cell(0, 10, txt=(
         f"Recebi {passagens_total} vales-transporte, referentes ao mês de "
         f"{calendar.month_name[mes]} de {ano}, pelo que firmo o presente."
     ))
+    pdf.ln(10)
+
+    pdf.multi_cell(0, 10, txt=f"O valor total é de R$ {custo_total:.2f} ({valor_extenso}).")
     pdf.ln(20)
 
     # Local e data
