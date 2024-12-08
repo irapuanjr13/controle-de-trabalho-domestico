@@ -3,6 +3,8 @@ from datetime import datetime, timedelta
 import calendar
 import holidays
 from num2words import num2words
+import schedule
+import time
 
 # Configurações gerais
 FERIADOS = holidays.Brazil()  # Lista de feriados no Brasil
@@ -117,36 +119,39 @@ def gerar_recibo(passagens_total, custo_total, mes, ano):
 
 def executar_geracao_recibo():
     """
-    Calcula as passagens e gera o recibo.
+    Calcula as passagens e gera o recibo para o mês posterior ao agendamento.
     """
     hoje = datetime.now()
-    mes_atual = hoje.month
-    ano_atual = hoje.year
+    proximo_mes = (hoje.month % 12) + 1
+    ano_proximo_mes = hoje.year + (1 if proximo_mes == 1 else 0)
 
     # Determina as folgas (10º dia útil ajustado para sexta-feira)
-    dias_uteis = calcular_dias_uteis(ano_atual, mes_atual)
+    dias_uteis = calcular_dias_uteis(ano_proximo_mes, proximo_mes)
     folgas = ajustar_folgas_para_sexta(dias_uteis[9::10])
 
     # Calcula as passagens e o custo total
-    passagens_total, custo_total, dias_trabalhados = calcular_passagens_e_custo(ano_atual, mes_atual, folgas)
+    passagens_total, custo_total, dias_trabalhados = calcular_passagens_e_custo(ano_proximo_mes, proximo_mes, folgas)
 
     print(f"Dias úteis trabalhados: {dias_trabalhados}")
     print(f"Total de passagens: {passagens_total}")
     print(f"Custo total: R$ {custo_total:.2f}")
 
     # Gera o recibo em PDF
-    recibo_pdf = gerar_recibo(passagens_total, custo_total, mes_atual, ano_atual)
+    recibo_pdf = gerar_recibo(passagens_total, custo_total, proximo_mes, ano_proximo_mes)
     print(f"Recibo gerado: {recibo_pdf}")
 
 
-if __name__ == "__main__":
-    try:
-        print("Enviando e-mail de teste para verificar configurações...")
-        enviar_email_teste()
-        print("E-mail de teste enviado com sucesso!")
-    except Exception as e:
-        print(f"Erro ao enviar e-mail de teste: {e}")
+def agendar_envio():
+    """
+    Agenda a execução para o dia 08 de cada mês.
+    """
+    schedule.every().month.at("08 00:00").do(executar_geracao_recibo)
+    print("Agendamento configurado para todo dia 26.")
+
+    while True:
+        schedule.run_pending()
+        time.sleep(60)
+
 
 if __name__ == "__main__":
     agendar_envio()
-
