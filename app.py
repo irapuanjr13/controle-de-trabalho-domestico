@@ -119,13 +119,13 @@ def gerar_recibo(passagens_total, custo_total, mes, ano):
 
 def verificar_data():
     """
-    Verifica se é dia 8 e executa a função se for o caso.
+    Verifica se é dia 26 e executa a função se for o caso.
     """
     hoje = datetime.now()
-    if hoje.day == 8:  # Verifica se é dia 8
+    if hoje.day == 26:  # Verifica se é dia 26
         executar_geracao_recibo()
     else:
-        print(f"Hoje não é dia 08. Data atual: {hoje.strftime('%d/%m/%Y')}")
+        print(f"Hoje não é dia 26. Data atual: {hoje.strftime('%d/%m/%Y')}")
 
 
 def executar_geracao_recibo():
@@ -154,10 +154,10 @@ def executar_geracao_recibo():
    
 def agendar_envio():
     """
-    Agenda a execução para o dia 8 de cada mês.
+    Agenda a execução para o dia 26 de cada mês.
     """
      # Configura o agendamento para verificar diariamente às 08:00
-    schedule.every().day.at("00:35").do(verificar_data)
+    schedule.every().day.at("08:00").do(verificar_data)
 
     print("Agendamento configurado. O script está em execução...")
 
