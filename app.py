@@ -157,7 +157,7 @@ def agendar_envio():
     Agenda a execução para o dia 8 de cada mês.
     """
      # Configura o agendamento para verificar diariamente às 08:00
-    schedule.every().day.at("08:00").do(verificar_data)
+    schedule.every().day.at("00:35").do(verificar_data)
 
     print("Agendamento configurado. O script está em execução...")
 
