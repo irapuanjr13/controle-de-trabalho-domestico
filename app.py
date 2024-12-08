@@ -2,7 +2,7 @@ from fpdf import FPDF
 from datetime import datetime, timedelta
 import calendar
 import holidays
-import inflect
+from num2words import num2words
 
 # Configurações gerais
 FERIADOS = holidays.Brazil()  # Lista de feriados no Brasil
@@ -60,8 +60,8 @@ def converter_valor_por_extenso(valor):
     Converte um valor monetário em reais para extenso.
     """
     reais, centavos = divmod(int(valor * 100), 100)
-    reais_extenso = f"{engine.number_to_words(reais, lang='pt_BR').capitalize()} reais"
-    centavos_extenso = f"{engine.number_to_words(centavos, lang='pt_BR')} centavos" if centavos > 0 else ""
+    reais_extenso = f"{num2words(reais, lang='pt_BR').capitalize()} reais"
+    centavos_extenso = f"{num2words(centavos, lang='pt_BR')} centavos" if centavos > 0 else ""
     return f"{reais_extenso} e {centavos_extenso}".strip()
 
 
