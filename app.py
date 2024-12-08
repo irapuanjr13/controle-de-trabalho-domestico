@@ -8,7 +8,6 @@ from num2words import num2words
 FERIADOS = holidays.Brazil()  # Lista de feriados no Brasil
 VALOR_PASSAGEM = 5.25         # Valor unitário da passagem
 CONDUCOES_POR_DIA = 4         # Número de conduções diárias (ida e volta)
-engine = inflect.engine()     # Motor para conversão de números para palavras (extenso)
 
 
 def calcular_dias_uteis(ano, mes):
