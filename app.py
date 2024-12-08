@@ -106,7 +106,7 @@ def agendar_envio():
     try:
         anexo, ano_vigencia, mes_vigencia = gerar_pdf_domestica(
             dias_trabalhados=20,
-            folgas=[12, 27],
+            folgas=[13, 27],
             custo_transporte=20 * CUSTO_DIARIO_TRANSPORTE,
             fechamento_data=fechamento_data
         )
