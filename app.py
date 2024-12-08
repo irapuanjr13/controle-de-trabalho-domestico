@@ -147,6 +147,6 @@ if __name__ == "__main__":
     except Exception as e:
         print(f"Erro ao enviar e-mail de teste: {e}")
 
-    # Em seguida, inicia o agendamento normal
+if __name__ == "__main__":
     agendar_envio()
 
