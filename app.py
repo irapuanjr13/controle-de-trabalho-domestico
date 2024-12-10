@@ -9,6 +9,8 @@ import time
 import os
 import io
 from io import BytesIO
+import logging
+from email import encoders
 
 # Carregar variáveis de ambiente
 load_dotenv()
