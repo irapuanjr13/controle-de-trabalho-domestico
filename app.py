@@ -6,6 +6,20 @@ from num2words import num2words
 import schedule
 import time
 
+# Carregar variáveis de ambiente
+load_dotenv()
+
+# Configurações de e-mail
+EMAIL_REMETENTE = os.getenv("EMAIL_REMETENTE")  # Nome da variável no arquivo .env
+SENHA_EMAIL = os.getenv("SENHA_EMAIL")      # Nome da variável no arquivo .env
+
+# Verificar se as variáveis foram carregadas corretamente
+if not EMAIL_REMETENTE or not SENHA_EMAIL:
+    raise ValueError("As variáveis de ambiente EMAIL_REMETENTE ou SENHA_EMAIL não foram configuradas corretamente.")
+
+# Configuração de log
+logging.basicConfig(filename='errors.log', level=logging.ERROR)
+
 # Configurações gerais
 FERIADOS = holidays.Brazil()  # Lista de feriados no Brasil
 VALOR_PASSAGEM = 5.25         # Valor unitário da passagem
@@ -151,6 +165,37 @@ def executar_geracao_recibo():
     recibo_pdf = gerar_recibo(passagens_total, custo_total, proximo_mes, ano_proximo_mes)
     print(f"Recibo gerado: {recibo_pdf}")
 
+def enviar_email_com_retentativas(destinatarios, assunto, mensagem, anexo, max_tentativas=3, intervalo_retentativas=5):
+    for tentativa in range(1, max_tentativas + 1):
+        try:
+            for destinatario in destinatarios:
+                msg = MIMEMultipart()
+                msg['From'] = EMAIL_REMETENTE
+                msg['To'] = destinatario
+                msg['Subject'] = assunto
+                msg.attach(MIMEText(mensagem, 'plain'))
+
+                with open(anexo, "rb") as f:
+                    part = MIMEBase('application', 'octet-stream')
+                    part.set_payload(f.read())
+                    encoders.encode_base64(part)
+                    part.add_header('Content-Disposition', f"attachment; filename={os.path.basename(anexo)}")
+                    msg.attach(part)
+
+                with smtplib.SMTP("smtp.mail.yahoo.com", 587) as smtp:
+                    smtp.starttls()
+                    smtp.login(EMAIL_REMETENTE, SENHA_EMAIL)
+                    smtp.send_message(msg)
+                    print(f"Email enviado para {destinatario} com sucesso!")
+            return  # Se tudo der certo, sai da função
+        except Exception as e:
+            logging.error(f"Tentativa {tentativa} falhou: {e}")
+            if tentativa < max_tentativas:
+                print(f"Tentativa {tentativa} falhou. Tentando novamente em {intervalo_retentativas} segundos...")
+                time.sleep(intervalo_retentativas)
+            else:
+                print(f"Todas as {max_tentativas} tentativas falharam.")
+                raise
    
 def agendar_envio():
     """
