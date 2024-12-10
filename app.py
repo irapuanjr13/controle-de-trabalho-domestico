@@ -2,6 +2,7 @@ from fpdf import FPDF
 from datetime import datetime, timedelta
 import calendar
 import holidays
+from dotenv import load_dotenv
 from num2words import num2words
 import schedule
 import time
