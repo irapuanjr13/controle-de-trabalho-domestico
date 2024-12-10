@@ -6,6 +6,9 @@ from dotenv import load_dotenv
 from num2words import num2words
 import schedule
 import time
+import os
+import io
+from io import BytesIO
 
 # Carregar variáveis de ambiente
 load_dotenv()
